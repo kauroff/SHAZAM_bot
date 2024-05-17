@@ -9,8 +9,6 @@ API_KEY = os.getenv('SHAZAM_API_KEY')
 url = "https://shazam.p.rapidapi.com/search"
 
 
-
-
 @bot.message_handler(commands=['start'])
 def start_message(message):
     bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}!')
