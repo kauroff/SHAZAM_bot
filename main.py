@@ -20,7 +20,7 @@ def start_message(message):
 @bot.message_handler(content_types=['text'])
 def message_reply(message):
     if message.text.lower()[0] in 'abcdefghijklmnopqrstuvwxyz':
-        querystring = {"term": message, "locale": "en-US", "offset": "0", "limit": "7"}
+        querystring = {"term": message.text, "locale": "en-US", "offset": "0", "limit": "7"}
 
         headers = {
             "X-RapidAPI-Key": API_KEY,
@@ -29,11 +29,12 @@ def message_reply(message):
 
         response = requests.get(url, headers=headers, params=querystring)
 
-        for i in range(len(response.json()['tracks'])):
-            text = f"'{response.json()['artists']['hits'][0]['artist']['name']}' - '{response.json()['tracks']['hits'][0]['track']['title']}'\n"
-            bot.send_message(message.chat.id, text)
+        # for i in range(len(response.json()['tracks']['hits'][0])):
+        artist = response.json()['artists']['hits'][0]['artist']['name']
+        song = response.json()['tracks']['hits'][0]['track']['title']
+        bot.send_message(message.chat.id, f'{artist} - {song}')
     else:
-        querystring = {"term": message, "locale": "ru-RU", "offset": "0", "limit": "7"}
+        querystring = {"term": message.text, "locale": "ru-RU", "offset": "0", "limit": "7"}
 
         headers = {
             "X-RapidAPI-Key": API_KEY,
@@ -42,9 +43,10 @@ def message_reply(message):
 
         response = requests.get(url, headers=headers, params=querystring)
 
-        for i in range(len(response.json()['tracks'])):
-            text = f"'{response.json()['artists']['hits'][0]['artist']['name']}' - '{response.json()['tracks']['hits'][0]['track']['title']}'\n"
-            bot.send_message(message.chat.id, text)
+        # for i in range(len(response.json()['tracks']['hits'][0])):
+        artist = response.json()['artists']['hits'][0]['artist']['name']
+        song = response.json()['tracks']['hits'][0]['track']['title']
+        bot.send_message(message.chat.id, f'{artist} - {song}')
 
 
 bot.infinity_polling()
