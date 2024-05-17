@@ -19,34 +19,38 @@ def start_message(message):
 
 @bot.message_handler(content_types=['text'])
 def message_reply(message):
-    if message.text.lower()[0] in 'abcdefghijklmnopqrstuvwxyz':
-        querystring = {"term": message.text, "locale": "en-US", "offset": "0", "limit": "7"}
+    try:
+        if message.text.lower()[0] in 'abcdefghijklmnopqrstuvwxyz':
+            querystring = {"term": message.text, "locale": "en-US", "offset": "0", "limit": "7"}
 
-        headers = {
-            "X-RapidAPI-Key": API_KEY,
-            "X-RapidAPI-Host": "shazam.p.rapidapi.com"
-        }
+            headers = {
+                "X-RapidAPI-Key": API_KEY,
+                "X-RapidAPI-Host": "shazam.p.rapidapi.com"
+            }
 
-        response = requests.get(url, headers=headers, params=querystring)
+            response = requests.get(url, headers=headers, params=querystring)
 
-        # for i in range(len(response.json()['tracks']['hits'][0])):
-        artist = response.json()['artists']['hits'][0]['artist']['name']
-        song = response.json()['tracks']['hits'][0]['track']['title']
-        bot.send_message(message.chat.id, f'{artist} - {song}')
-    else:
-        querystring = {"term": message.text, "locale": "ru-RU", "offset": "0", "limit": "7"}
+            # for i in range(len(response.json()['tracks']['hits'][0])):
+            artist = response.json()['artists']['hits'][0]['artist']['name']
+            song = response.json()['tracks']['hits'][0]['track']['title']
+            bot.send_message(message.chat.id, f'{artist} - {song}')
+        else:
+            querystring = {"term": message.text, "locale": "ru-RU", "offset": "0", "limit": "7"}
 
-        headers = {
-            "X-RapidAPI-Key": API_KEY,
-            "X-RapidAPI-Host": "shazam.p.rapidapi.com"
-        }
+            headers = {
+                "X-RapidAPI-Key": API_KEY,
+                "X-RapidAPI-Host": "shazam.p.rapidapi.com"
+            }
 
-        response = requests.get(url, headers=headers, params=querystring)
+            response = requests.get(url, headers=headers, params=querystring)
 
-        # for i in range(len(response.json()['tracks']['hits'][0])):
-        artist = response.json()['artists']['hits'][0]['artist']['name']
-        song = response.json()['tracks']['hits'][0]['track']['title']
-        bot.send_message(message.chat.id, f'{artist} - {song}')
+            # for i in range(len(response.json()['tracks']['hits'][0])):
+            artist = response.json()['artists']['hits'][0]['artist']['name']
+            song = response.json()['tracks']['hits'][0]['track']['title']
+            bot.send_message(message.chat.id, f'{artist} - {song}')
+    except(KeyError):
+        bot.send_message(message.chat.id,
+                         'Не могу найти по этим словам трек :( Ты точно правильно все ввел?')
 
 
 bot.infinity_polling()
