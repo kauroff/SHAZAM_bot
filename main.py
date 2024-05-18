@@ -30,10 +30,11 @@ def message_reply(message):
 
             response = requests.get(url, headers=headers, params=querystring)
 
-            # for i in range(len(response.json()['tracks']['hits'][0])):
-            artist = response.json()['artists']['hits'][0]['artist']['name']
-            song = response.json()['tracks']['hits'][0]['track']['title']
-            bot.send_message(message.chat.id, f'{artist} - {song}')
+            bot.send_message(message.chat.id, 'Вот какие песни мне удалось найти:')
+            for i in range(len(response.json()['tracks']['hits'])):
+                photo = response.json()['tracks']['hits'][i]['track']['share']['image']
+                text = response.json()['tracks']['hits'][i]['track']['share']['subject']
+                bot.send_photo(message.chat.id, photo, text)
         else:
             querystring = {"term": message.text, "locale": "ru-RU", "offset": "0", "limit": "7"}
 
@@ -44,13 +45,14 @@ def message_reply(message):
 
             response = requests.get(url, headers=headers, params=querystring)
 
-            # for i in range(len(response.json()['tracks']['hits'][0])):
-            artist = response.json()['artists']['hits'][0]['artist']['name']
-            song = response.json()['tracks']['hits'][0]['track']['title']
-            bot.send_message(message.chat.id, f'{artist} - {song}')
+            bot.send_message(message.chat.id, 'Вот какие песни мне удалось найти:')
+            for i in range(len(response.json()['tracks']['hits'])):
+                photo = response.json()['tracks']['hits'][i]['track']['share']['image']
+                text = response.json()['tracks']['hits'][i]['track']['share']['subject']
+                bot.send_photo(message.chat.id, photo, text)
     except(KeyError):
         bot.send_message(message.chat.id,
-                         'Не могу найти по этим словам трек :( Ты точно правильно все ввел?')
+                         'Не могу найти по этим словам трек:( Ты точно правильно все ввел?')
 
 
 bot.infinity_polling()
