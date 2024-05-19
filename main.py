@@ -35,6 +35,7 @@ def message_reply(message):
                 photo = response.json()['tracks']['hits'][i]['track']['share']['image']
                 text = response.json()['tracks']['hits'][i]['track']['share']['subject']
                 bot.send_photo(message.chat.id, photo, text)
+                # bot.send_audio(message.chat.id, response.json()['tracks']['hits'][i]['hub']['actions'][1]['uri'])
         else:
             querystring = {"term": message.text, "locale": "ru-RU", "offset": "0", "limit": "7"}
 
@@ -52,7 +53,9 @@ def message_reply(message):
                 bot.send_photo(message.chat.id, photo, text)
     except(KeyError):
         bot.send_message(message.chat.id,
-                         'Не могу найти по этим словам трек:( Ты точно правильно все ввел?')
+                         'Не могу найти по этим словам трек:( Проверь корректность введенных данных')
+    finally:
+        bot.send_message(message.chat.id, 'Найдем что-нибудь еще?')
 
 
 bot.infinity_polling()
