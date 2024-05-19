@@ -55,7 +55,7 @@ def message_reply(message):
         bot.send_message(message.chat.id,
                          'Не могу найти по этим словам трек:( Проверь корректность введенных данных')
     finally:
-        bot.send_message(message.chat.id,'Найдем что-нибудь еще?')
+        bot.send_message(message.chat.id, 'Найдем что-нибудь еще?')
 
 
 bot.infinity_polling()
