@@ -19,43 +19,32 @@ def start_message(message):
 
 @bot.message_handler(content_types=['text'])
 def message_reply(message):
+    if message.text.lower()[0] in 'abcdefghijklmnopqrstuvwxyz':
+        querystring = {"term": message.text, "locale": "en-US", "offset": "0", "limit": "7"}
+
+    else:
+        querystring = {"term": message.text, "locale": "ru-RU", "offset": "0", "limit": "7"}
+
+    headers = {
+        "X-RapidAPI-Key": API_KEY,
+        "X-RapidAPI-Host": "shazam.p.rapidapi.com"
+    }
+
+    response = requests.get(url, headers=headers, params=querystring)
+
     try:
-        if message.text.lower()[0] in 'abcdefghijklmnopqrstuvwxyz':
-            querystring = {"term": message.text, "locale": "en-US", "offset": "0", "limit": "7"}
-
-            headers = {
-                "X-RapidAPI-Key": API_KEY,
-                "X-RapidAPI-Host": "shazam.p.rapidapi.com"
-            }
-
-            response = requests.get(url, headers=headers, params=querystring)
-
-            bot.send_message(message.chat.id, 'Вот какие песни мне удалось найти:')
-            for i in range(len(response.json()['tracks']['hits'])):
-                photo = response.json()['tracks']['hits'][i]['track']['share']['image']
-                text = response.json()['tracks']['hits'][i]['track']['share']['subject']
-                bot.send_photo(message.chat.id, photo, text)
-                # bot.send_audio(message.chat.id, response.json()['tracks']['hits'][i]['hub']['actions'][1]['uri'])
-        else:
-            querystring = {"term": message.text, "locale": "ru-RU", "offset": "0", "limit": "7"}
-
-            headers = {
-                "X-RapidAPI-Key": API_KEY,
-                "X-RapidAPI-Host": "shazam.p.rapidapi.com"
-            }
-
-            response = requests.get(url, headers=headers, params=querystring)
-
-            bot.send_message(message.chat.id, 'Вот какие песни мне удалось найти:')
-            for i in range(len(response.json()['tracks']['hits'])):
-                photo = response.json()['tracks']['hits'][i]['track']['share']['image']
-                text = response.json()['tracks']['hits'][i]['track']['share']['subject']
-                bot.send_photo(message.chat.id, photo, text)
+        type(len(response.json()['tracks']['hits'])) == int
+        bot.send_message(message.chat.id, 'Вот какие песни мне удалось найти:')
+        for i in range(len(response.json()['tracks']['hits'])):
+            photo = response.json()['tracks']['hits'][i]['track']['share']['image']
+            text = response.json()['tracks']['hits'][i]['track']['share']['subject']
+            bot.send_photo(message.chat.id, photo, text)
+            # bot.send_audio(message.chat.id, response.json()['tracks']['hits'][i]['hub']['actions'][1]['uri'])
     except(KeyError):
         bot.send_message(message.chat.id,
-                         'Не могу найти по этим словам трек:( Проверь корректность введенных данных')
+                         'Не смог ничего найти \U0001F614')
     finally:
-        bot.send_message(message.chat.id, 'Найдем что-нибудь еще?')
+        bot.send_message(message.chat.id, 'Попробуем еще?')
 
 
 bot.infinity_polling()
