@@ -2,6 +2,7 @@ import os
 import telebot
 from telebot import types
 import requests
+import json
 
 bot = telebot.TeleBot(os.getenv('SHAZAM_TG_API_TOKEN'))
 API_KEY = os.getenv('SHAZAM_API_KEY')
@@ -45,6 +46,35 @@ def message_reply(message):
                          'Не смог ничего найти \U0001F614')
     finally:
         bot.send_message(message.chat.id, 'Попробуем еще?')
+
+
+@bot.message_handler(content_types=['voice'])
+def message_reply(message):
+    file_info = bot.get_file(message.voice.file_id)
+    file = requests.get('https://api.telegram.org/file/bot{0}/{1}'.format(bot, file_info.file_path))
+
+    with open('voice.ogg', 'wb') as f:
+        f.write(file.content)
+    with open('voice.ogg', 'rb') as f:
+        api_url = 'https://audiotag.info/api'
+        apikey = os.getenv('AUDIO_API_KEY')
+        payload = {'action': 'identify', 'apikey': apikey}
+        result = requests.post(api_url, data=payload, files={'file': f})
+        try:
+            token = json.loads(result.text)['token']
+            n = 1;
+            while n < 100:
+                time.sleep(0.5);
+                n += 1;
+                payload = {'action': 'get_result', 'token': token, 'apikey': apikey}
+                result = requests.post(api_url, data=payload)
+                track, group = json.loads(result.text)['data'][0]['tracks'][0][0], \
+                json.loads(result.text)['data'][0]['tracks'][0][1]
+                break
+            bot.send_message(message.chat.id, f'{track} - {group}')
+        except(KeyError):
+            bot.send_message(message.chat.id,
+                             'Не смог ничего найти \U0001F614')
 
 
 bot.infinity_polling()
