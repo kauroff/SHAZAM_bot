@@ -3,10 +3,12 @@ import telebot
 from telebot import types
 import requests
 import json
+import time
 
 bot = telebot.TeleBot(os.getenv('SHAZAM_TG_API_TOKEN'))
 API_KEY = os.getenv('SHAZAM_API_KEY')
-
+api_url = 'https://audiotag.info/api'
+apikey = os.getenv('AUDIO_API_KEY')
 url = "https://shazam.p.rapidapi.com/search"
 
 
@@ -19,7 +21,7 @@ def start_message(message):
 
 
 @bot.message_handler(content_types=['text'])
-def message_reply(message):
+def message_info(message):
     if message.text.lower()[0] in 'abcdefghijklmnopqrstuvwxyz':
         querystring = {"term": message.text, "locale": "en-US", "offset": "0", "limit": "7"}
 
@@ -49,15 +51,13 @@ def message_reply(message):
 
 
 @bot.message_handler(content_types=['voice'])
-def message_reply(message):
+def message_audio(message):
     file_info = bot.get_file(message.voice.file_id)
-    file = requests.get('https://api.telegram.org/file/bot{0}/{1}'.format(bot, file_info.file_path))
+    file = requests.get('https://api.telegram.org/file/bot{0}/{1}'.format(os.getenv('SHAZAM_TG_API_TOKEN'), file_info.file_path))
 
     with open('voice.ogg', 'wb') as f:
         f.write(file.content)
     with open('voice.ogg', 'rb') as f:
-        api_url = 'https://audiotag.info/api'
-        apikey = os.getenv('AUDIO_API_KEY')
         payload = {'action': 'identify', 'apikey': apikey}
         result = requests.post(api_url, data=payload, files={'file': f})
         try:
