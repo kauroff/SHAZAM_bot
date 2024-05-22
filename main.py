@@ -40,11 +40,11 @@ def message_info(message):
         type(len(response.json()['tracks']['hits'])) == int
         bot.send_message(message.chat.id, 'Вот какие песни мне удалось найти:')
         for i in range(len(response.json()['tracks']['hits'])):
-            # photo = response.json()['tracks']['hits'][i]['track']['share']['image']
+            # photo = response.json()['tracks']['hits'][i]['track']['share']['image'] # Возвращает с БД обложку для трека
             text = response.json()['tracks']['hits'][i]['track']['share']['subject']
             bot.send_message(message.chat.id, text)
-            # bot.send_photo(message.chat.id, photo, text)
-            # bot.send_audio(message.chat.id, response.json()['tracks']['hits'][i]['hub']['actions'][1]['uri'])
+            # bot.send_photo(message.chat.id, photo, text) # Отправка в бота обложки и подписи в виде названия трека
+            # bot.send_audio(message.chat.id, response.json()['tracks']['hits'][i]['hub']['actions'][1]['uri']) # Возможность отправить снипет
     except(KeyError):
         bot.send_message(message.chat.id,
                          'Не смог ничего найти \U0001F614')
@@ -78,6 +78,7 @@ def message_audio(message):
                     json.loads(result.text)['data'][0]['tracks'][0][1]
                 break
             bot.send_message(message.chat.id, f'{track} - {group}')
+            # Блок кода, отвечающий за отправку обложки и названия трека при поиске посредством голосового сообщения
             # if track.lower()[0] in 'abcdefghijklmnopqrstuvwxyz':
             #     querystring = {"term": track, "locale": "en-US", "offset": "0"}
             #
